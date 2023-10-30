@@ -94,7 +94,7 @@ export KBUILD_COMPILER_STRING="$($HOME/cosmic/bin/clang --version | head -n 1 | 
 
 # Functions
 clang_build () {
-    make -j O=out \
+    make -j$(nproc --all) O=out \
                           ARCH=arm64 \
                           CC="clang" \
                           AR="llvm-ar" \
