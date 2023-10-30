@@ -65,22 +65,22 @@ done
 
 [[ -z ${ZIP} ]] && { echo "${bold}Gunakan -Z atau --zip Untuk Membuat Zip Kernel Installer${normal}"; }
 
- Clone toolchain
-if ! [ -d "../toolchain" ]; then
-    wget -O proton.tar.zst https://github.com/kdrag0n/proton-clang/archive/20200801.tar.gz
-    mkdir -p ../toolchain/clang
-    sudo tar -I zstd -xvf proton.tar.zst -C ../toolchain/clang --strip-components=1
-else
-    echo "${bold}Folder Toolchain Sudah Tersedia, Tidak Perlu Di Clone${normal}"
-fi
+# Clone toolchain
+#if ! [ -d "../toolchain" ]; then
+#    wget -O proton.tar.zst https://github.com/kdrag0n/proton-clang/archive/20200801.tar.gz
+#    mkdir -p ../toolchain/clang
+#    sudo tar -I zstd -xvf proton.tar.zst -C ../toolchain/clang --strip-components=1
+#else
+#    echo "${bold}Folder Toolchain Sudah Tersedia, Tidak Perlu Di Clone${normal}"
+#fi
 
-#if ! [ -d "$HOME/cosmic" ]; then
-#echo "Cosmic clang not found! Cloning..."
-#if ! git clone -q https://github.com/kdrag0n/proton-clang.git --depth=1 -b master ~/cosmic; then
-#echo "Cloning failed! Aborting..."
-#exit 1
-#fi
-#fi
+if ! [ -d "$HOME/cosmic" ]; then
+echo "Cosmic clang not found! Cloning..."
+if ! git clone -q https://github.com/kdrag0n/proton-clang.git --depth=1 -b master ~/cosmic; then
+echo "Cloning failed! Aborting..."
+exit 1
+fi
+fi
 
 # ENV
 CONFIG=vendor/ginkgo-perf_defconfig
@@ -89,11 +89,9 @@ PARENT_DIR="$(dirname "$KERNEL_DIR")"
 KERN_IMG="$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb"
 export KBUILD_BUILD_USER="root"
 export KBUILD_BUILD_HOST="xderm"
-export PATH="$PARENT_DIR/toolchain/clang/bin:$PATH"
-export LD_LIBRARY_PATH="$PARENT_DIR/toolchain/clang/lib:$LD_LIBRARY_PATH"
-export KBUILD_COMPILER_STRING="$("$PARENT_DIR"/toolchain/clang/bin/clang --version | head -n 1 | perl -pe 's/\((?:http|git).*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//' -e 's/^.*clang/clang/')"
-#export PATH="$HOME/cosmic/bin:$PATH"
-#export KBUILD_COMPILER_STRING="$($HOME/cosmic/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+export PATH="$HOME/cosmic/bin:$PATH"
+export KBUILD_COMPILER_STRING="$($HOME/cosmic/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
 # Functions
 clang_build () {
     make -j O=out \
